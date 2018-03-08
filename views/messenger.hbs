@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font: 13px Helvetica, Arial; }
+  form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+  form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+  form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+  #messages { list-style-type: none; margin: 0; padding: 0; }
+  #messages li { padding: 5px 10px; }
+  #messages li:nth-child(odd) { background: #eee; }
+  </style>
+</head>
+<body>
+  <ul id="messages">
+      {{#each messages}}
+        {{this.content}}
+      {{/each}}
+  </ul>
+  <!-- <form action="">
+    <input id="m" autocomplete="off" /><button>Send</button>
+  </form> -->
+  <input id="message-text" autocomplete="off" />
+  <a class="btn btn-info" id="message-send-btn">Send</a>
+  <br>
+  Turn this into a party -- add a friend!
+  <input id="third-friend" autocomplete="off" />
+  <a class="btn btn-info" id="groupchat">Groupchat</a>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  $(function () {
+    var socket = io();
+    $('#message-send-btn').click(function(){
+      var messageText = $('#message-text').val();
+      socket.emit('chat message', messageText);
+      $('#message-text').val('');
+      $.post('/message', {
+        'content': messageText,
+        'from': '{{user}}',
+        'to': '{{recipient}}',
+        'chatId': '{{chatId}}'
+      }, function(data) {
+        console.log("Message successfully sent :", messageText, '{{user}}', '{{recipient}}')
+      })
+    });
+
+    console.log("Sending chat-invite-frontend");
+    socket.emit('chat-invite-frontend', {
+      'from': '{{user}}',
+      'to': '{{recipient}}'
+    });
+
+    socket.on('chat message', function(msg){
+      $('#messages').append($('<li>').text(msg));
+    });
+
+    socket.on('groupchat-invite', function(msg){
+      console.log("Received groupchat-invite in messenger");
+      var div = $('<div>').text("You've been invited to a groupchat! Click here: ");
+      div.attr('class', 'alert alert-success');
+      var link = $('<a>');
+      link.attr('href', '/groupchat/' + msg.groupId);
+      link.text('chat');
+      div.append(link);
+      $('#chat-invite').append(div);
+    });
+
+    $('#groupchat').click(function() {
+      var chatId = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      var thirdFriend = $('#third-friend').val();
+      socket.emit('groupchat-invite-start', {
+        'from': '{{user}}',
+        'to': '{{recipient}}',
+        'third': thirdFriend,
+        'chatId': chatId
+      });
+      window.location.replace("/groupchat/" + chatId);
+    });
+
+
+  });
+</script>
+</html>

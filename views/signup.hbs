@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<title> Signup </title>
+<head>
+
+</head>
+<h1> Signup </h1>
+<body>
+<form action="/createaccount" method="post">
+<div class="form-group">
+	Full Name: <input type="text" class="form-control" name="fullname" id="fullname" style="width: 40%"><br>
+    Username: <input type="text" class="form-control" name="username" id="username" style="width: 40%"><br>
+    Password: <input type="password" class="form-control" name="password" id="password" style="width: 40%"><br>
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>
+</div>
+{{ message }}
+	<script>
+		$('#signupTab').addClass('active');
+	</script>
+</body>
+</html>

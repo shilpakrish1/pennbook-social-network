@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font: 13px Helvetica, Arial; }
+  form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+  form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+  form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+  #messages { list-style-type: none; margin: 0; padding: 0; }
+  #messages li { padding: 5px 10px; }
+  #messages li:nth-child(odd) { background: #eee; }
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <!-- <form action="">
+    <input id="m" autocomplete="off" /><button>Send</button>
+  </form> -->
+  <input id="message-text" autocomplete="off" />
+  <a class="btn btn-info" id="message-send-btn">Send</a>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  $(function () {
+    var href = window.location.href;
+    var ind = href.indexOf('groupchat/') + 'groupchat/'.length;
+    var sub = '/' + href.substring(ind);
+    var socket = io();
+    // var socket_room = io(sub);
+    socket.emit('groupchat', {'groupId': sub});
+    console.log('room', sub);
+    $('#message-send-btn').click(function() {
+      console.log("Emmitting groupchat message in frontend...", socket );
+      var messageText = $('#message-text').val();
+      socket.emit('groupchat-message', {'content': messageText, 'groupId': sub});
+      $('#message-text').val('');
+    })
+
+    socket.on('groupchat-message-send', function(msg){
+      console.log("Receiving groupchat message in frontend...");
+      $('#messages').append($('<li>').text(msg.content));
+    });
+
+  });
+</script>
+</html>

@@ -1,0 +1,180 @@
+#content {
+  background-color: #e9ebee !important;
+}
+
+.sidebar-link > a {
+  color: grey;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #e9ebee;
+  overflow:auto;
+}
+
+#sidebar-friends > a {
+  color: black;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.navbar {
+  background-color: #4267b2;
+}
+
+.navbar-inverse .navbar-brand {
+  color: white;
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover   {
+  background-color: #365899 !important;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+  color: white !important;
+}
+
+#sidebar-left > ul {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+#sidebar-left > .active {
+  background-color: white;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border: 1px solid #DEDEDE;
+  border-radius: 2px;
+}
+
+.sidebar-btn:hover {
+  background-color: white;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border: 1px solid #DEDEDE;
+  border-radius: 2px;
+}
+
+#sidebar-left {
+  position: fixed;
+  top: 70px;
+  right: 69%;
+  width: 12%;
+  height: 90%;
+  opacity: 1;
+  color: #000;
+  display: block;
+  cursor: pointer;
+  padding: 10px 9px;
+  padding-bottom: 6px;
+  font-size: 16px;
+  z-index: 999999999999;
+  -webkit-transition: all .2s ease;
+  -moz-transition: all .2s ease;
+  -ms-transition: all .2s ease;
+  -o-transition: all .2s ease;
+  transition: all .2s ease;
+  -webkit-border-radius: 3px;
+  /*border: 2px solid #DEDEDE;*/
+}
+
+
+#sidebar-right {
+  position: fixed;
+  top: 70px;
+  right: 14%;
+  width: 17%;
+  height: 90%;
+  opacity: 1;
+  color: #000;
+  display: block;
+  cursor: pointer;
+  padding: 10px 9px;
+  padding-bottom: 6px;
+  font-size: 16px;
+  z-index: 999999999999;
+  -webkit-transition: all .2s ease;
+  -moz-transition: all .2s ease;
+  -ms-transition: all .2s ease;
+  -o-transition: all .2s ease;
+  transition: all .2s ease;
+  -webkit-border-radius: 3px;
+}
+
+#sidebar-right > .sidebar-right-box {
+  border-radius: 3px;
+  border: 2px solid #DEDEDE;
+  background-color: white;
+  padding: 10px 9px;
+  padding-bottom: 6px;
+}
+
+#sidebar-friends {
+  position: fixed;
+  top: 53px;
+  right: 0%;
+  width: 10%;
+  height: 100%;
+  opacity: 1;
+  color: #000;
+  display: block;
+  cursor: pointer;
+  padding: 10px 9px;
+  padding-bottom: 6px;
+  font-size: 16px;
+  z-index: 999999999999;
+  -webkit-transition: all .2s ease;
+  -moz-transition: all .2s ease;
+  -ms-transition: all .2s ease;
+  -o-transition: all .2s ease;
+  transition: all .2s ease;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  border: 2px solid #DEDEDE;
+  /*background-color: white;*/
+  padding: 10px 9px;
+  padding-bottom: 6px;
+}
+
+#timeline {
+  padding-top: 20px;
+  padding-left: 33%;
+  padding-right: 33%;
+}
+
+.timeline-box {
+  border-radius: 5px;
+  border: 2px solid #DEDEDE;
+  background-color: white;
+  padding: 10px 9px;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.timeline-content-end {
+  border-radius: 5px;
+  border: 2px solid #DEDEDE;
+  background-color: #365899;
+  padding: 10px 9px;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: white;
+  text-align: center;
+}

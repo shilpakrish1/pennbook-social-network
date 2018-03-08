@@ -1,0 +1,4 @@
+node_modules
+process.env
+config.json
+.git

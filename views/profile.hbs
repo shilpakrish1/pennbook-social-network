@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<title> {{ fullname }} </title>
+<script>
+	$.get('/getinterests', function(data) {
+		if (data) {
+			var arr = JSON.parse(data.interests[0].value).interests.split(",");
+			for (var i = 0; i < arr.length; i++) {
+				var interestDiv = document.getElementById('interests');
+				interestDiv.innerHTML += '<span class="label label-primary">' + arr[i] + '</span> ';
+			}
+		}
+
+		$('#friend-submit-btn').click(function(e) {
+			var friend_id = $("#friend-id").val();
+			$.post("/friendship", {
+				"friend": friend_id
+			}, function(success) {
+				var interestDiv = document.getElementById('friend-list');
+				interestDiv.innerHTML += '<span class="label label-info">' + friend_id + '</span> ';
+				$("#friend-id").val("");
+			})
+		})
+	});
+
+	$.get('/getfriends', function(data) {
+		if (data) {
+			var arr = data.friends.split(",");
+			for (var i = 0; i < arr.length; i++) {
+				var interestDiv = document.getElementById('friend-list');
+				interestDiv.innerHTML += '<span class="label label-info">' + arr[i] + '</span> ';
+			}
+		}
+	});
+
+	$.get('/friendrecs', function(data) {
+		console.log("my data is " + data);
+		if (data) {
+			var recs = document.getElementById('friend-recs');
+			for (var i = 0; i < data.recs.length; i++) {
+				recs.innerHTML += '<span class="label label-success">' + data.recs[i] + '</span> <br><br> ';
+			}
+			console.log("data: " + data);
+		}
+	});
+
+
+</script>
+<body>
+<div class="card">
+<h2> <b>{{ fullname }}</b></h2>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">About Me <a href="/editprofile" class="btn btn-link"><span class="glyphicon glyphicon-pencil"></span></a> </h3>
+  </div>
+  <div class="panel-body">
+    	<p class = "card-text"> <b> Email:</b> {{ email }} </p>
+		<p class = "card-text"> <b> Birthday: </b> {{ birthday }} </p>
+		<p class = "card-text"> <b> Affiliation: </b> {{ affiliation }} </p>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Interests</h3>
+  </div>
+  <div class="panel-body" id="interests">
+  </div>
+</div>
+ <div class="panel panel-default">
+ <div class="panel-heading">
+ 	<h3 class="panel-title">Friendships</h3>
+  </div>
+  	<div class="panel-body" id="friend-list"> </div>
+  	<div class="panel-body">
+	<input type="text" id="friend-id" placeholder="Add a friend..." class="form-control" style="width:30%"><br>
+	<a id='friend-submit-btn' class='btn btn-info btn-xs'>Add</a>
+	</div>
+	</div>
+</div>
+</div>
+
+<div class="panel panel-default">
+ <div class="panel-heading">
+ 	<h3 class="panel-title">Friend Recommendations</h3>
+  </div>
+  	<div class="panel-body" id="friend-recs"> </div>
+	</div>
+</div>
+</div>
+<br>
+<a class="btn btn-info" href='/friendvisualizer'> Friend Visualizer </a>
+</body>
+</html>

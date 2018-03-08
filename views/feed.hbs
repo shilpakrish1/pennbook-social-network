@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<body>
+  <div id="sidebar-left">
+      <ul class="sidebar-btn" id="profile-link-sidebar-left">
+        <li class="sidebar-link" id="profile-tab"><a href="/profile"><span class="glyphicon glyphicon-user"></span> {{fullname}}</a></li>
+      </ul>
+      <br>
+      <ul class="sidebar-btn active" id="newsfeed-link-sidebar-left">
+        <li class="sidebar-link" id="newsfeed-tab"><a href="/feed"><span class="glyphicon glyphicon-menu-hamburger"></span> Newsfeed</a></li>
+      </ul>
+  </div>
+  <div id="sidebar-right">
+    <div class="sidebar-right-box">
+      <span class="glyphicon glyphicon-calendar"></span> 3 Event invites
+      <br></br>
+      <span class="glyphicon glyphicon-gift"></span> Maddy Polen and 1 other
+    </div>
+    <br>
+    <div class="sidebar-right-box">
+      Trending <br></br>
+      <span class="glyphicon glyphicon-arrow-up"></span> Idk lots of stuff
+    </div>
+  </div>
+  <div id="sidebar-friends">
+    <p>Logged in Friends</h>
+  </div>
+
+  <div id="timeline">
+    <div class="timeline-box" id="add-post">
+      <form>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1"><span class="glyphicon glyphicon-pencil"></span> Make Post</label>
+          <textarea class="form-control" id="timeline-post-content" rows="3"></textarea>
+        </div>
+        <a class="btn btn-primary" id="timeline-post-submit-btn">Post</a>
+      </form>
+    </div>
+    <div class="timeline-content" id="timeline-content-box">
+    </div>
+    <div class="timeline-content-end">
+        Sorry there are no more posts to show.
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    $(function () {
+      var socket = io();
+      var userId = "{{user}}";
+      socket.emit('logged-in', {'userId': userId});
+      socket.on('friend-logged-on', function(msg){
+        console.log("Friend logged in...", msg);
+        var inner = $('<a>').text(msg);
+        $('#sidebar-friends').append(inner.attr('href', '/chat/' + msg));
+        $('#sidebar-friends').append($('<br>'));
+      });
+
+      socket.on('friend-logged-off', function(msg){
+        // $('#sidebar-friends').append($('<li>').text(msg));
+        console.log("A friend logged off", msg);
+        $('a:contains(' + msg + ')').filter(function() {
+          return $(this).text() == msg;
+        }).remove();
+      });
+
+      socket.on('chat-invite', function(msg){
+        console.log("Received chat-invite in feed");
+        var div = $('<div>').text("User " + msg + " has invited you to chat! Click here : ");
+        div.attr('class', 'alert alert-success');
+        div.text("User " + msg + " has invited you to chat! Click here : ");
+        var link = $('<a>');
+        link.attr('href', '/chat/' + msg)
+        link.text('here');
+        div.append(link);
+        $('#chat-invite').append(div);
+      });
+
+      socket.on('groupchat-invite', function(msg){
+        console.log("Received groupchat-invite in feed");
+        var div = $('<div>').text("You've been invited to a groupchat! Click here: ");
+        div.attr('class', 'alert alert-success');
+        var link = $('<a>');
+        link.attr('href', '/groupchat/' + msg.groupId);
+        link.text('chat');
+        div.append(link);
+        $('#chat-invite').append(div);
+      });
+    });
+  </script>
+  <script>
+    var content = $('#timeline-post-content');
+    $("#timeline-post-submit-btn").click(function() {
+      console.log("clicked");
+      $.post('/post', {
+        'content': content.val()
+      }, function() {
+        $('#timeline-post-content').val("");
+      })
+    })
+  </script>
+
+  <script type="text/javascript">
+  var allPosts = [];
+  $.get('/posts', function(data) {
+    console.log("posts: ", data);
+    var wrap = document.getElementById('timeline-content-box');
+    for (var post of data.posts) {
+      var value = post.value;
+      wrap.innerHTML = wrap.innerHTML + "<div class='timeline-box'><div>" + value['creator'] + "</div>" + value['content'] + "</div>";
+      allPosts.push(post);
+    }
+  })
+  .fail(function() {
+    console.log("Failure: fetching initial posts");
+  })
+
+  //detects when user reaches the end
+  window.addEventListener("scroll", function(){
+    var wrap = document.getElementById('timeline-content-box');
+    var contentHeight = wrap.offsetHeight;
+    var yOffset = window.pageYOffset;
+    var y = yOffset + window.innerHeight;
+    if(y >= contentHeight)
+    {
+      //load new content
+      $.get('/posts', function(data) {
+        console.log("scroll data.posts: ", data.posts);
+        for (var post of data.posts) {
+          console.log("scroll posts: ", post.key);
+          if (!containsKey(post.key, allPosts)) {
+            var value = post.value;
+            wrap.innerHTML = wrap.innerHTML + "<div class='timeline-box'><div>" + value['creator'] + "</div>" + value['content'] + "</div>";
+            allPosts.push(post);
+          }
+        }
+      })
+    }
+  })
+
+  function containsKey(key, posts) {
+    for (var post of posts) {
+      if (post.key === key) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+
+  </script>
+</body>
+</html>

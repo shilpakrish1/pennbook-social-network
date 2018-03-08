@@ -1,0 +1,28 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.156.0",
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "express-session": "^1.15.6",
+    "fs": "0.0.1-security",
+    "hbs": "~3.1.0",
+    "http": "0.0.0",
+    "joi": "^13.0.2",
+    "js-sha256": "^0.8.0",
+    "line-by-line": "^0.1.5",
+    "lru-cache": "^4.1.1",
+    "morgan": "~1.9.0",
+    "serve-favicon": "~2.4.5",
+    "shorthash": "0.0.2",
+    "socket.io": "^2.0.4",
+    "vogels": "^2.2.0"
+  }
+}

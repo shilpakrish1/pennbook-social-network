@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{title}}</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">facenovel</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="/about">About facenovel</a></li>
+      </ul>
+      {{#if userNotLoggedIn}}
+      <ul class="nav navbar-nav navbar-right">
+        <li id="signupTab"><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li id="loginTab" ><a href="/login"><span class="glyphicon glyphicon-log-out"></span> Login</a></li>
+      </ul>
+      {{else}}
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <div>
+            <input type="text" class="typeahead form-control" placeholder="Search" id = "searchquery" >
+          </div>
+        </li>
+        <li><a class='btn' id ="search-submit"><span class="glyphicon glyphicon-search"></span> Submit </a></li>
+        <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> Profile </a></li>
+        <li><a class='btn' id="logout-submit"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+      </ul>
+      {{/if}}
+    </div>
+  </nav>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+  <script>
+  var friends = [];
+  $.get('/getfriends', function(data) {
+    if (data) {
+      var arr = data.friends.split(",");
+      for (var i = 0; i < arr.length; i++) {
+        friends.push(arr[i]);
+      }
+    }
+  });
+  console.log(friends);
+  $('input.typeahead').typeahead({
+    source: friends
+  });
+
+  $(function () {
+    var socket = io();
+    var userId = "{{user}}";
+    $('#logout-submit').click(function() {
+      socket.emit('logged-out', {'userId': userId});
+      $.get("/logout", function() {
+        window.location.replace("/");
+      })
+    })
+
+
+
+    // socket.on('groupchat', function(msg){
+    //   $('#chat-invite').append(<div class="alert alert-success">"Users " + msg.from + " and " + msg.to + " have invited you to a group chat! Click here : "<a href=ms>chat</a></div>);
+    //   var div = $('<div>').attr('class', 'alert alert-success');
+    //   div.text("Users " + msg.from + " and " + msg.to + " have invited you to a group chat! Click here : ");
+    //   div.innerHTML = div.innerHTML + $('<a>').attr('href', '/groupchat/' + msg.chatId);
+    //   $('#chat-invite').append($('<div>').attr('class', 'alert alert-success'));
+    // });
+  });
+
+
+
+  </script>
+  <div id="chat-invite"></div>
+  <div id="overall">
+    {{{body}}}
+  </div>
+</body>
+</html>

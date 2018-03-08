@@ -1,0 +1,180 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('app:server');
+var http = require('http');
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Socket.io
+ */
+var clients = {};
+var db = require('../models/database.js');
+
+// clients[customId] = clientId;
+//
+// var lookup = clients[customId];
+
+io.on('connection', function(socket){
+  socket.on('logged-in', function(msg) {
+    clients[msg.userId] = socket.id;
+    var callback = function(err, data) {
+      if (err) {
+      } else {
+        if (!data) return;
+        for (var friendship of data) {
+          socket.broadcast.to(clients[friendship.value]).emit('friend-logged-on', msg.userId);
+          if (clients.hasOwnProperty(friendship.value)) {
+            io.to(clients[msg.userId]).emit('friend-logged-on', friendship.value);
+          }
+        }
+      }
+    };
+
+    db.lookup("friends2", msg.userId, callback);
+  });
+
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+  });
+
+  socket.on('chat-invite-frontend', function(msg){
+    var from = msg.from;
+    var to = msg.to;
+    console.log("Received chat invite frontend in bin", to, clients[to]);
+
+    socket.broadcast.to(clients[to]).emit('chat-invite', from);
+  });
+
+  socket.on('groupchat-invite-start', function(msg) {
+    var from = msg.from;
+    var to = msg.to;
+    var third = msg.third;
+    var chatId = msg.chatId;
+    socket.join(chatId);
+
+    socket.broadcast.to(clients[to]).emit('groupchat-invite', {
+      'groupId': chatId
+    });
+    socket.broadcast.to(clients[third]).emit('groupchat-invite', {
+      'groupId': chatId
+    });
+  })
+
+  socket.on('groupchat', function(msg){
+    var chatId = msg.groupId;
+    var chatString = chatId;
+    socket.join(chatString);
+  });
+
+  socket.on('groupchat-message', function(msg) {
+    var content = msg.content;
+    var groupId = msg.groupId;
+    var chatName = msg.groupId;
+
+    io.to(chatName).emit('groupchat-message-send', {
+        'content': content,
+        'groupId': groupId
+    });
+  });
+
+  socket.on('logged-out', function(msg) {
+    delete clients[msg.userId];
+    var callback = function(err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (!data) return;
+        for (var friendship of data) {
+          socket.broadcast.to(clients[friendship.value]).emit('friend-logged-off', msg.userId);
+        }
+      }
+    };
+    db.lookup("friends2", msg.userId, callback);
+  });
+
+
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
